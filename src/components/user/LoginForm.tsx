@@ -15,6 +15,7 @@ import { setAccessToken, setCurrentUserData, setRefreshToken } from '@/features/
 import { CurrentUserData } from '@/types';
 import { AppDispatch, RootState } from "@/store/store";
 import { logout } from "@/features/userSlice";
+import { GoogleLogin } from '@react-oauth/google';
 
 // Zod schema for email validation
 const loginSchema = z.object({
@@ -91,6 +92,27 @@ const LoginForm: React.FC = () => {
         }
     };
 
+    const handleGoogleSuccess = async (credentialResponse: any) => {
+        setSuccess('');
+        setError('');
+        setIsLogging(true);
+        try {
+            const response = await api.post('/api/v1/users/google-auth', { credential: credentialResponse.credential });
+            setSuccess(response.data.message);
+            const userData: CurrentUserData = response.data?.data.user || null;
+            const accessToken: string = response.data?.data.accessToken;
+            const refreshToken: string = response.data?.data.refreshToken;
+            dispatch(setCurrentUserData(userData));
+            dispatch(setAccessToken(accessToken));
+            dispatch(setRefreshToken(refreshToken));
+            router.push('/');
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to authenticate with Google.');
+        } finally {
+            setIsLogging(false);
+        }
+    };
+
     return (
         <div className="flex flex-col items-center min-h-screen">
             <Form {...form}>
@@ -162,6 +184,12 @@ const LoginForm: React.FC = () => {
                         {isLogging ? "Logging In..." : "Log in"}
                     </Button>
 
+                    <div className="flex justify-center my-4">
+                        <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => setError('Google Login Failed')}
+                        />
+                    </div>
 
                     <Button
                         onClick={() => router.push('/user/auth/register-email')}

@@ -5,6 +5,7 @@ import Footer from "@/components/footer/Footer";
 import ClientOnlyWrapper from "@/components/ClientOnlyWrapper";
 import Sidebar from "@/components/sidebar/Sidebar";
 import { inter } from "@/lib/fonts";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 
 export const metadata: Metadata = {
@@ -20,18 +21,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`lg:mx-[6%] min-h-screen lg:border-x-2 border-[#4151598e] ${inter.className}`}>
-        <ClientOnlyWrapper>
-          <div className="lg:grid lg:grid-cols-12">
-            <div className="lg:col-span-3 hidden min-h-screen lg:block bg-slate-50 dark:bg-[#0e1f2a] lg:border-r-2 border-[#4151598e]">
-              <Sidebar/>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
+          <ClientOnlyWrapper>
+            <div className="lg:grid lg:grid-cols-12">
+              <div className="lg:col-span-3 hidden min-h-screen lg:block bg-slate-50 dark:bg-[#0e1f2a] lg:border-r-2 border-[#4151598e]">
+                <Sidebar/>
+              </div>
+              <div className="lg:col-span-9 relative">
+                <Header />
+                <div className="pt-[16%] md:pt-[7%] pb-[30%] md:pb-[20%]">{children}</div>
+                <Footer />
+              </div>
             </div>
-            <div className="lg:col-span-9 relative">
-              <Header />
-              <div className="pt-[16%] md:pt-[7%] pb-[30%] md:pb-[20%]">{children}</div>
-              <Footer />
-            </div>
-          </div>
-        </ClientOnlyWrapper>
+          </ClientOnlyWrapper>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );
