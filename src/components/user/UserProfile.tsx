@@ -13,6 +13,7 @@ import UserVideos from './UserVideos';
 import UserTweets from './UserTweets';
 import UserPlaylists from '../playlist/UserPlaylists';
 import Image from 'next/image';
+import { enhanceAvatarResolution } from '@/lib/utils';
 
 const UserProfile: React.FC = () => {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -52,7 +53,7 @@ const UserProfile: React.FC = () => {
     const userId = userData._id
     const fullName = userData.fullName || "User";
     const bio = userData.bio || "Hey there! I'm using Fuzion.";
-    const avatar = userData.avatar || process.env.NEXT_PUBLIC_DEFAULT_USER_AVATAR;
+    const avatar = enhanceAvatarResolution(userData.avatar);
     const coverImage = userData.coverImage || process.env.NEXT_PUBLIC_DEFAULT_USER_COVER_IMAGE;
     const channelsSubscribedToCount = userData.channelsSubscribedToCount || 0;
 
@@ -91,16 +92,13 @@ const UserProfile: React.FC = () => {
 
                 <div className="absolute inset-x-0 -bottom-12 flex items-center justify-between px-6">
                     <Image
-                        src={String(avatar)}
+                        src={avatar}
                         alt="Avatar"
-                        className="rounded-full object-cover border-2 shadow-md border-[#e0e0e0] dark:border-[#1c3648]"
+                        className="rounded-full object-cover border-2 shadow-md border-[#e0e0e0] dark:border-[#1c3648] w-24 h-24 sm:w-32 sm:h-32"
                         width={128}
                         height={128}
                         sizes="(min-width: 640px) 8rem, 6rem" 
-                        style={{
-                            height: 'auto',
-                            width: 'auto',
-                        }}
+                        priority
                     />
                     {isLoggedIn && (
                         <Button

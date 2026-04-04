@@ -8,6 +8,7 @@ import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import Image from 'next/image';
+import { enhanceAvatarResolution } from '@/lib/utils';
 
 
 interface UserCardProps {
@@ -45,7 +46,7 @@ const UserCard: React.FC<UserCardProps> = ({ fetchedUser, enableBio = true }) =>
         }
     };
 
-    const avatarUrl = avatar || process.env.NEXT_PUBLIC_DEFAULT_USER_AVATAR
+    const avatarUrl = enhanceAvatarResolution(avatar);
 
     return (
         <div className="flex items-start p-2 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-slate-800 transition cursor-pointer"
