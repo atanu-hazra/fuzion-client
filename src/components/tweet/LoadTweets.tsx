@@ -30,7 +30,7 @@ const LoadTweets: React.FC<LoadTweetsProps> = ({ query = '' }) => {
         >
             <div>
                 {loadedTweets.map((tweet) => {
-                    return <TweetCard key={tweet._id+'-'+Date.now()} tweet={tweet} />
+                    return <TweetCard key={tweet._id} tweet={tweet} />
                 })}
             </div>
         </InfiniteScroll>
