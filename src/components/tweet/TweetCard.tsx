@@ -17,6 +17,7 @@ import { formatNumber, getUploadAge } from '@/lib/helpers';
 import { Tweet } from '@/types';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import { enhanceAvatarResolution } from '@/lib/utils';
 
 interface TweetCardProps {
     tweet: Tweet;
@@ -178,11 +179,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet, isPreview = true }) => {
 
     const uploadAge = getUploadAge(createdAt)
 
-    let avatar = owner.avatar
-
-    if (owner.avatar === '' && process.env.NEXT_PUBLIC_DEFAULT_USER_AVATAR) {
-        avatar = process.env.NEXT_PUBLIC_DEFAULT_USER_AVATAR
-    }
+    const avatar = enhanceAvatarResolution(owner.avatar);
 
     return (
         <>

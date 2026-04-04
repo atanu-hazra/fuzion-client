@@ -8,6 +8,7 @@ import { formatNumber, getUploadAge } from '@/lib/helpers';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { ApiError, Comment } from '@/types';
+import { enhanceAvatarResolution } from '@/lib/utils';
 
 interface CommentCardProps {
     comment: Comment;
@@ -152,7 +153,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, reduceCommentCount }
                             onClick={() => router.push(`/user/${owner.username}`)}
                         >
                             <img
-                                src={owner.avatar || process.env.NEXT_PUBLIC_DEFAULT_USER_AVATAR}
+                                src={enhanceAvatarResolution(owner.avatar)}
                                 alt={`${owner.username} avatar`}
                                 className="rounded-full w-10 h-10 object-cover mr-4"
                             />

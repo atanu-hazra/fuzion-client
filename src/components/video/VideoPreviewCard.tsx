@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { Video } from '@/types';
 import api from '@/lib/api';
 import ToggleSaveVideo from '../playlist/ToggleSaveVideo';
+import { enhanceAvatarResolution } from '@/lib/utils';
 
 const VideoPreviewCard: React.FC<Video> = (video) => {
     const { _id, createdAt, thumbnail, title, owner, views, duration, isPublished } = video
@@ -89,11 +90,7 @@ const VideoPreviewCard: React.FC<Video> = (video) => {
         }
     };
 
-    let avatar = owner.avatar
-
-    if (owner.avatar === '' && process.env.NEXT_PUBLIC_DEFAULT_USER_AVATAR) {
-        avatar = process.env.NEXT_PUBLIC_DEFAULT_USER_AVATAR
-    }
+    const avatar = enhanceAvatarResolution(owner.avatar);
 
     return (
         <>
