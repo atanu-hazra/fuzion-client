@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useSelector } from 'react-redux';
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Trash2 } from "lucide-react";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch } from "react-redux";
 import { logout } from "@/features/userSlice";
@@ -71,67 +71,102 @@ const DeleteAccount: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center">
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="p-6 rounded shadow-md w-80 space-y-3"
-                >
-                    <h2 className="text-2xl font-bold text-center mb-4 text-blue-500">Delete your account</h2>
-                    <div className="text-center mb-6 text-gray-500">
-                        <p className="text-sm">
-                            Deleting your account is a permanent action. All your data, including saved tweets, playlists, and uploaded videos, will be permanently removed.
-                            This action cannot be undone.
+        <div className="flex items-center justify-center h-auto px-4">
+            <div className="w-full max-w-md">
+                <div className="bg-white/80 dark:bg-[#0f2a35]/80 backdrop-blur-xl border border-red-200/60 dark:border-red-900/30 rounded-2xl shadow-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] p-8 md:p-10 transition-all duration-300">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500/10 to-rose-600/10 dark:from-red-400/10 dark:to-rose-500/10 mb-4">
+                            <Trash2 className="w-7 h-7 text-red-500 dark:text-red-400" />
+                        </div>
+                        <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-red-500 to-rose-600 dark:from-red-400 dark:to-rose-400 bg-clip-text text-transparent">
+                            Delete Account
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">
+                            This action is permanent and cannot be undone
                         </p>
                     </div>
 
-                    <FormField
-                        name="password"
-                        control={form.control}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password:</FormLabel>
-                                <div className="relative">
-                                    <FormControl>
-                                        <Input
-                                            className='placeholder:text-slate-400'
-                                            type={showPassword ? "text" : "password"}
-                                            placeholder="Enter your password to proceed"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="absolute inset-y-0 right-2"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >
-                                        {showPassword ? (
-                                            <EyeClosed className="w-5 h-5" />
-                                        ) : (
-                                            <Eye className="w-5 h-5" />
-                                        )}
-                                    </Button>
+                    {/* Warning */}
+                    <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/15 border border-red-200/80 dark:border-red-800/30">
+                        <p className="text-sm text-red-700 dark:text-red-300 leading-relaxed">
+                            Deleting your account will permanently remove all your data, including saved tweets, playlists, and uploaded videos. This action cannot be undone.
+                        </p>
+                    </div>
+
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                            {/* Password Field */}
+                            <FormField
+                                name="password"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Confirm Password
+                                        </FormLabel>
+                                        <div className="relative">
+                                            <FormControl>
+                                                <Input
+                                                    className="h-11 rounded-xl bg-gray-50 dark:bg-[#0b1e28] border-gray-200 dark:border-[#1a3d4d] placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-500/20 dark:focus:ring-red-400/20 transition-all duration-200 pr-11"
+                                                    type={showPassword ? "text" : "password"}
+                                                    placeholder="Enter your password to proceed"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? (
+                                                    <EyeClosed className="w-4 h-4" />
+                                                ) : (
+                                                    <Eye className="w-4 h-4" />
+                                                )}
+                                            </Button>
+                                        </div>
+                                        <FormMessage className="text-red-500 dark:text-red-400 text-xs" />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Feedback Messages */}
+                            {error && (
+                                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40">
+                                    <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
                                 </div>
-                                <FormMessage className="text-red-700 dark:text-red-300" />
-                            </FormItem>
-                        )}
-                    />
+                            )}
+                            {success && (
+                                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40">
+                                    <p className="text-sm text-green-600 dark:text-green-400">{success}</p>
+                                </div>
+                            )}
 
-                    {/* Success and Error Messages */}
-                    {error && <p className="text-red-500 mb-2">{error}</p>}
-                    {success && <p className="text-green-500 mb-2">{success}</p>}
+                            {/* Delete Button */}
+                            <Button
+                                type="submit"
+                                className="w-full h-11 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-medium shadow-lg shadow-red-500/20 dark:shadow-red-500/10 transition-all duration-200 hover:shadow-xl hover:shadow-red-500/30"
+                            >
+                                Delete My Account
+                            </Button>
 
-                    {/* Submit Button */}
-                    <Button
-                        type="submit"
-                        className="bg-blue-500 text-white rounded my-5 p-2 w-full hover:bg-blue-600"
-                    >
-                        Delete account
-                    </Button>
-                </form>
-            </Form>
+                            {/* Back to settings */}
+                            <div className="text-center pt-2">
+                                <button
+                                    onClick={() => router.push('/settings')}
+                                    type='button'
+                                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors duration-200"
+                                >
+                                    Changed your mind? <span className="font-medium">Go back to settings</span>
+                                </button>
+                            </div>
+                        </form>
+                    </Form>
+                </div>
+            </div>
         </div>
     );
 };

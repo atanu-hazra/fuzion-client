@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { logout } from "@/features/userSlice";
+import { KeyRound } from 'lucide-react';
 
 // Zod schema for email validation
 const forgotPasswordSchema = z.object({
@@ -84,47 +85,81 @@ const SendForgotPassOtp: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center">
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="p-6 rounded shadow-md w-80"
-                >
-                    <h2 className="text-2xl font-bold text-center mb-4 text-blue-500">Forgot Password</h2>
+        <div className="flex items-center justify-center h-auto px-4">
+            <div className="w-full max-w-md">
+                <div className="bg-white/80 dark:bg-[#0f2a35]/80 backdrop-blur-xl border border-gray-200/60 dark:border-[#1a3d4d]/60 rounded-2xl shadow-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] p-8 md:p-10 transition-all duration-300">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 dark:from-cyan-400/10 dark:to-blue-500/10 mb-4">
+                            <KeyRound className="w-7 h-7 text-cyan-600 dark:text-cyan-400" />
+                        </div>
+                        <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
+                            Forgot Password
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">
+                            Enter your email or username to receive a reset code
+                        </p>
+                    </div>
 
-                    {/* Email Field */}
-                    <FormField
-                        name="usernameOrEmail"
-                        control={form.control}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email or Username:</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        className='placeholder:text-slate-400'
-                                        type="text"
-                                        placeholder="Enter your email or username"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-red-500" />
-                            </FormItem>
-                        )}
-                    />
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                            {/* Email/Username Field */}
+                            <FormField
+                                name="usernameOrEmail"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Email or Username
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                className="h-11 rounded-xl bg-gray-50 dark:bg-[#0b1e28] border-gray-200 dark:border-[#1a3d4d] placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-cyan-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 dark:focus:ring-cyan-400/20 transition-all duration-200"
+                                                type="text"
+                                                placeholder="Enter your email or username"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage className="text-red-500 dark:text-red-400 text-xs" />
+                                    </FormItem>
+                                )}
+                            />
 
-                    {/* Success and Error Messages */}
-                    {error && <p className="text-red-500 mb-2">{error}</p>}
-                    {success && <p className="text-green-500 mb-2">{success}</p>}
+                            {/* Feedback Messages */}
+                            {error && (
+                                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40">
+                                    <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                                </div>
+                            )}
+                            {success && (
+                                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40">
+                                    <p className="text-sm text-green-600 dark:text-green-400">{success}</p>
+                                </div>
+                            )}
 
-                    {/* Submit Button */}
-                    <Button
-                        type="submit"
-                        className="bg-blue-500 text-white rounded my-5 p-2 w-full hover:bg-blue-600"
-                    >
-                        {isSubmitting ? "Submitting..." : "Submit"}
-                    </Button>
-                </form>
-            </Form>
+                            {/* Submit Button */}
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full h-11 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium shadow-lg shadow-cyan-500/20 dark:shadow-cyan-500/10 transition-all duration-200 hover:shadow-xl hover:shadow-cyan-500/30"
+                            >
+                                {isSubmitting ? "Sending Code..." : "Send Reset Code"}
+                            </Button>
+
+                            {/* Back to login */}
+                            <div className="text-center pt-2">
+                                <button
+                                    onClick={() => router.push('/user/auth/login')}
+                                    type='button'
+                                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors duration-200"
+                                >
+                                    Remember your password? <span className="font-medium">Sign in</span>
+                                </button>
+                            </div>
+                        </form>
+                    </Form>
+                </div>
+            </div>
         </div>
     );
 };
