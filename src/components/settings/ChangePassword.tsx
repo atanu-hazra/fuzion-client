@@ -16,7 +16,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Lock } from "lucide-react";
 import api from "@/lib/api";
 import { RootState } from "@/store/store";
 
@@ -93,133 +93,99 @@ const ChangePassword: React.FC = () => {
         }
     };
 
+    const inputClasses = "h-11 rounded-xl bg-gray-50 dark:bg-[#0b1e28] border-gray-200 dark:border-[#1a3d4d] placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-cyan-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 dark:focus:ring-cyan-400/20 transition-all duration-200 pr-11";
+
+    const renderPasswordField = (
+        name: "oldPassword" | "newPassword" | "confirmNewPassword",
+        label: string,
+        placeholder: string,
+        show: boolean,
+        toggle: () => void
+    ) => (
+        <FormField
+            name={name}
+            control={form.control}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {label}
+                    </FormLabel>
+                    <div className="relative">
+                        <FormControl>
+                            <Input
+                                className={inputClasses}
+                                type={show ? "text" : "password"}
+                                placeholder={placeholder}
+                                {...field}
+                            />
+                        </FormControl>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                            onClick={toggle}
+                        >
+                            {show ? (
+                                <EyeClosed className="w-4 h-4" />
+                            ) : (
+                                <Eye className="w-4 h-4" />
+                            )}
+                        </Button>
+                    </div>
+                    <FormMessage className="text-red-500 dark:text-red-400 text-xs" />
+                </FormItem>
+            )}
+        />
+    );
+
     return (
-        <div className="flex flex-col items-center min-h-screen my-10">
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6 p-8 rounded-lg shadow-lg w-96"
-                >
-                    <h2 className="text-2xl font-semibold text-blue-500 text-center mb-6">
-                        Change Password
-                    </h2>
+        <div className="flex items-center justify-center h-auto px-4">
+            <div className="w-full max-w-md">
+                <div className="bg-white/80 dark:bg-[#0f2a35]/80 backdrop-blur-xl border border-gray-200/60 dark:border-[#1a3d4d]/60 rounded-2xl shadow-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] p-8 md:p-10 transition-all duration-300">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 dark:from-cyan-400/10 dark:to-blue-500/10 mb-4">
+                            <Lock className="w-7 h-7 text-cyan-600 dark:text-cyan-400" />
+                        </div>
+                        <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
+                            Change Password
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">
+                            Update your password to keep your account secure
+                        </p>
+                    </div>
 
-                    {/* Old Password */}
-                    <FormField
-                        name="oldPassword"
-                        control={form.control}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Old Password:</FormLabel>
-                                <div className="relative">
-                                    <FormControl>
-                                        <Input
-                                            className='placeholder:text-slate-400'
-                                            type={showOldPassword ? "text" : "password"}
-                                            placeholder="Enter your old password"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="absolute inset-y-0 right-2"
-                                        onClick={() => setShowOldPassword(!showOldPassword)}
-                                    >
-                                        {showOldPassword ? (
-                                            <EyeClosed className="w-5 h-5" />
-                                        ) : (
-                                            <Eye className="w-5 h-5" />
-                                        )}
-                                    </Button>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                            {renderPasswordField("oldPassword", "Current Password", "Enter your current password", showOldPassword, () => setShowOldPassword(!showOldPassword))}
+                            {renderPasswordField("newPassword", "New Password", "Enter your new password", showNewPassword, () => setShowNewPassword(!showNewPassword))}
+                            {renderPasswordField("confirmNewPassword", "Confirm New Password", "Confirm your new password", showConfirmPassword, () => setShowConfirmPassword(!showConfirmPassword))}
+
+                            {/* Feedback Messages */}
+                            {errorMessage && (
+                                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40">
+                                    <p className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
                                 </div>
-                                <FormMessage className="text-red-700 dark:text-red-300" />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* New Password */}
-                    <FormField
-                        name="newPassword"
-                        control={form.control}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>New Password:</FormLabel>
-                                <div className="relative">
-                                    <FormControl>
-                                        <Input
-                                            className='placeholder:text-slate-400'
-                                            type={showNewPassword ? "text" : "password"}
-                                            placeholder="Enter your new password"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="absolute inset-y-0 right-2"
-                                        onClick={() => setShowNewPassword(!showNewPassword)}
-                                    >
-                                        {showNewPassword ? (
-                                            <EyeClosed className="w-5 h-5" />
-                                        ) : (
-                                            <Eye className="w-5 h-5" />
-                                        )}
-                                    </Button>
+                            )}
+                            {successMessage && (
+                                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40">
+                                    <p className="text-sm text-green-600 dark:text-green-400">{successMessage}</p>
                                 </div>
-                                <FormMessage className="text-red-700 dark:text-red-300" />
-                            </FormItem>
-                        )}
-                    />
+                            )}
 
-                    {/* Confirm New Password */}
-                    <FormField
-                        name="confirmNewPassword"
-                        control={form.control}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Confirm New Password:</FormLabel>
-                                <div className="relative">
-                                    <FormControl>
-                                        <Input
-                                            className='placeholder:text-slate-400'
-                                            type={showConfirmPassword ? "text" : "password"}
-                                            placeholder="Confirm your new password"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="absolute inset-y-0 right-2"
-                                        onClick={() =>
-                                            setShowConfirmPassword(!showConfirmPassword)
-                                        }
-                                    >
-                                        {showConfirmPassword ? (
-                                            <EyeClosed className="w-5 h-5" />
-                                        ) : (
-                                            <Eye className="w-5 h-5" />
-                                        )}
-                                    </Button>
-                                </div>
-                                <FormMessage className="text-red-700 dark:text-red-300" />
-                            </FormItem>
-                        )}
-                    />
-
-                    {successMessage && <p className="text-green-500 text-center">{successMessage}</p>}
-                    {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
-
-                    {/* Submit Button */}
-                    <Button type="submit" className="w-full text-slate-100 bg-blue-500 hover:bg-blue-600">
-                        {isChanging ? "Changing..." : "Change Password"}
-                    </Button>
-                </form>
-            </Form>
+                            {/* Submit Button */}
+                            <Button
+                                type="submit"
+                                disabled={isChanging}
+                                className="w-full h-11 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium shadow-lg shadow-cyan-500/20 dark:shadow-cyan-500/10 transition-all duration-200 hover:shadow-xl hover:shadow-cyan-500/30"
+                            >
+                                {isChanging ? "Changing..." : "Change Password"}
+                            </Button>
+                        </form>
+                    </Form>
+                </div>
+            </div>
         </div>
     );
 };
