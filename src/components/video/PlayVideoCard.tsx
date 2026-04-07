@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { Bookmark, Heart, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
-import ReactPlayer from 'react-player';
 import { Button } from '../ui/button';
 import { RootState } from '@/store/store';
 import { formatNumber, getUploadAge, shuffleElements } from '@/lib/helpers';
@@ -15,6 +14,7 @@ import VideoComments from '../comment/VideoComments';
 import LoadVideos from './LoadVideos';
 import VideoPreviewCard from './VideoPreviewCard';
 import useUserVideos from '@/hooks/user/useUserVideos';
+import VideoPlayer from './VideoPlayer';
 
 const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
     const { _id, title, description, videoFile, owner, isLikedByUser, views, createdAt, likesCount } = video;
@@ -22,7 +22,6 @@ const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
     const currentUserData = useSelector((state: RootState) => state.user.currentUserData);
     const videoOwner = useUserInfo(owner.username);
     const router = useRouter();
-    const [isPlaying, setIsPlaying] = useState(true);
     const [likeStatus, setLikeStatus] = useState(isLikedByUser);
     const [likesCountState, setLikesCountState] = useState(Number(likesCount));
     const isLoggedIn = useMemo(() => !!currentUserData, [currentUserData]);
@@ -36,10 +35,6 @@ const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
     const secureVideoFile = videoFile.replace(/^http:\/\//, 'https://');
 
     const uploadAge = getUploadAge(createdAt);
-
-    const togglePlayPause = () => {
-        setIsPlaying((prev) => !prev)
-    };
 
     const toggleLike = async () => {
         if (!isLoggedIn) {
@@ -76,17 +71,8 @@ const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
     return (
         <>
             {/* Video Player */}
-            <div className="bg-black rounded-none overflow-hidden shadow-lg">
-                <div onClick={togglePlayPause} className="relative cursor-pointer aspect-video">
-                    <ReactPlayer
-                        url={secureVideoFile}
-                        playing={isPlaying}
-                        controls
-                        width="100%"
-                        height="100%"
-                        className="react-player"
-                    />
-                </div>
+            <div className="bg-black rounded-none sm:rounded-xl overflow-hidden shadow-lg">
+                <VideoPlayer src={secureVideoFile} />
             </div>
 
             {/* Video Info Section */}

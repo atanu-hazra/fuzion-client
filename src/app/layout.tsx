@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "plyr/dist/plyr.css";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import ClientOnlyWrapper from "@/components/ClientOnlyWrapper";
