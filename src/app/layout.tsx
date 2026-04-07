@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "plyr/dist/plyr.css";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import ClientOnlyWrapper from "@/components/ClientOnlyWrapper";
@@ -20,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`lg:mx-[6%] min-h-screen lg:border-x-2 border-[#4151598e] ${inter.className}`}>
+      <body className={`lg:mx-[6%] min-h-screen lg:border-x-2 border-[#4151598e] antialiased ${inter.className}`}>
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
           <ClientOnlyWrapper>
             <div className="lg:grid lg:grid-cols-12">

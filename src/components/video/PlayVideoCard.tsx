@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { Bookmark, Heart } from 'lucide-react';
-import ReactPlayer from 'react-player';
+import { Bookmark, Heart, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { RootState } from '@/store/store';
 import { formatNumber, getUploadAge, shuffleElements } from '@/lib/helpers';
@@ -15,6 +14,7 @@ import VideoComments from '../comment/VideoComments';
 import LoadVideos from './LoadVideos';
 import VideoPreviewCard from './VideoPreviewCard';
 import useUserVideos from '@/hooks/user/useUserVideos';
+import VideoPlayer from './VideoPlayer';
 
 const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
     const { _id, title, description, videoFile, owner, isLikedByUser, views, createdAt, likesCount } = video;
@@ -22,36 +22,19 @@ const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
     const currentUserData = useSelector((state: RootState) => state.user.currentUserData);
     const videoOwner = useUserInfo(owner.username);
     const router = useRouter();
-    const [isPlaying, setIsPlaying] = useState(true);
     const [likeStatus, setLikeStatus] = useState(isLikedByUser);
     const [likesCountState, setLikesCountState] = useState(Number(likesCount));
     const isLoggedIn = useMemo(() => !!currentUserData, [currentUserData]);
     const [showSaveModal, setShowSaveModal] = useState(false)
-    const [shortDescription, setShortDescription] = useState('')
-    const [showShortDescription, setShowShortDescription] = useState(false)
-    const ownerVideos = useUserVideos(String(owner._id))
-    const recommendedVideos = shuffleElements(ownerVideos).slice(0, 10)
+    const [showFullDescription, setShowFullDescription] = useState(false)
+    const ownerVideos = useUserVideos(String(owner._id)).filter((v) => v._id !== _id)
+    const recommendedVideos = shuffleElements(ownerVideos).slice(0, 4)
 
-    useEffect(() => {
-        if (description.length > 100) {
-            setShowShortDescription(true)
-            setShortDescription(description.slice(0, 100))
-        } else {
-            setShortDescription(description)
-        }
-    }, [description])
-
-    const toggleDescription = () => {
-        setShowShortDescription(prev => !prev)
-    }
+    const isLongDescription = description.length > 100;
 
     const secureVideoFile = videoFile.replace(/^http:\/\//, 'https://');
 
     const uploadAge = getUploadAge(createdAt);
-
-    const togglePlayPause = () => {
-        setIsPlaying((prev) => !prev)
-    };
 
     const toggleLike = async () => {
         if (!isLoggedIn) {
@@ -75,78 +58,132 @@ const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
         }
     };
 
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({ title, url: window.location.href });
+            } catch { /* user cancelled */ }
+        } else {
+            await navigator.clipboard.writeText(window.location.href);
+        }
+    };
+
     return (
         <>
-            <div className="rounded-lg overflow-hidden shadow-md">
-                <div onClick={togglePlayPause} className="relative cursor-pointer">
-                    <ReactPlayer
-                        url={secureVideoFile}
-                        playing={isPlaying}
-                        controls
-                        width="100%"
-                        height="100%"
-                        className="react-player"
-                    />
-                </div>
+            {/* Video Player */}
+            <div className="bg-black rounded-none overflow-hidden shadow-lg">
+                <VideoPlayer src={secureVideoFile} />
+            </div>
 
-                <div className="px-2 py-1">
-                    <h3 className="text-lg font-semibold">{title}</h3>
-                    <p className="text-sm text-gray-500 dark:text-slate-400">{formatNumber(views)} views • {uploadAge}</p>
-                    <p
-                        className="text-sm text-slate-700 dark:text-slate-200  mt-2 cursor-default"
-                        onClick={toggleDescription}
-                    >
-                        {showShortDescription ? shortDescription : description}
-                        {showShortDescription && <span className='text-gray-500'>...read more</span>}
+            {/* Video Info Section */}
+            <div className="px-3 sm:px-4 pt-3 pb-1">
+                {/* Title */}
+                <h1 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 leading-snug">
+                    {title}
+                </h1>
+
+                {/* Meta + Actions row */}
+                <div className="flex items-center justify-between mt-2">
+                    {/* Views & Age */}
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {formatNumber(views)} views <span className="mx-1">·</span> {uploadAge}
                     </p>
+
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-1">
+                        {/* Like */}
+                        <button
+                            onClick={toggleLike}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150 active:scale-95"
+                        >
+                            <Heart
+                                className={`w-5 h-5 transition-colors ${likeStatus ? 'fill-rose-500 text-rose-500' : 'text-slate-600 dark:text-slate-400'}`}
+                            />
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                {formatNumber(likesCountState)}
+                            </span>
+                        </button>
+
+                        {/* Share */}
+                        <button
+                            onClick={handleShare}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150 active:scale-95"
+                        >
+                            <Share2 className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden sm:inline">Share</span>
+                        </button>
+
+                        {/* Save */}
+                        <button
+                            onClick={() => {
+                                if (isLoggedIn) {
+                                    setShowSaveModal(true)
+                                } else {
+                                    router.push('/user/auth/login')
+                                }
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150 active:scale-95"
+                        >
+                            <Bookmark className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden sm:inline">Save</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div className="mx-2 flex items-center justify-between">
-                    <Button size="icon" onClick={toggleLike} className="flex items-center">
-                        <Heart
-                            className={likeStatus ? 'fill-red-500 text-red-500' : 'text-gray-400'}
-                            style={{ height: '24px', width: '24px' }}
-                        />
-                        <span className="ml-1 text-sm">{formatNumber(likesCountState)}</span>
-                    </Button>
-
-                    <Button size="icon"
-                        onClick={() => {
-                            if (isLoggedIn) {
-                                setShowSaveModal(true)
-                            } else {
-                                router.push('/user/auth/login')
-                            }
-                        }}
-                        className="flex items-center">
-                        <Bookmark
-                            className='text-slate-800 dark:text-slate-200'
-                            style={{ height: '24px', width: '24px' }}
-                        />
-                    </Button>
-                </div>
-
-                {videoOwner && (
-                    <div className="bg-slate-200 dark:bg-slate-800 bg-opacity-75">
-                        <UserCard fetchedUser={videoOwner} enableBio={false} />
+                {/* Description */}
+                {description && (
+                    <div
+                        className="mt-3 p-3 rounded-xl bg-slate-100 dark:bg-slate-800/50 cursor-pointer hover:bg-slate-200/70 dark:hover:bg-slate-800/70 transition-colors"
+                        onClick={() => setShowFullDescription(prev => !prev)}
+                    >
+                        <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
+                            {showFullDescription ? description : (isLongDescription ? description.slice(0, 100) : description)}
+                            {isLongDescription && !showFullDescription && (
+                                <span className="text-slate-500 dark:text-slate-400">...</span>
+                            )}
+                        </p>
+                        {isLongDescription && (
+                            <button className="mt-1 flex items-center gap-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                {showFullDescription ? (
+                                    <>Show less <ChevronUp className="w-3.5 h-3.5" /></>
+                                ) : (
+                                    <>Show more <ChevronDown className="w-3.5 h-3.5" /></>
+                                )}
+                            </button>
+                        )}
                     </div>
                 )}
-
-                {showSaveModal && (
-                    <ToggleSaveVideo videoId={_id} onDone={() => setShowSaveModal(false)} />
-                )}
             </div>
+
+            {/* Owner Card */}
+            {videoOwner && (
+                <div className="px-2 sm:px-3">
+                    <UserCard fetchedUser={videoOwner} enableBio={false} />
+                </div>
+            )}
+
+            {showSaveModal && (
+                <ToggleSaveVideo videoId={_id} onDone={() => setShowSaveModal(false)} />
+            )}
+
+            {/* Comments */}
             <VideoComments />
-            <div
-                className="text-lg text-center font-medium mx-2 mt-2 mb-4 py-1 bg-blue-400 text-slate-50 dark:bg-blue-600 dark:text-slate-200"
-            >
-                You Might Also Like
+
+            {/* You Might Also Like */}
+            <div className="mt-4 mb-3 px-3">
+                <div className="flex items-center gap-2">
+                    <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                    <span className="text-sm font-medium text-slate-500 dark:text-slate-400 px-2">
+                        You Might Also Like
+                    </span>
+                    <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                </div>
             </div>
             {recommendedVideos.length > 0
                 ? (
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4 sm:mx-2">
                         {recommendedVideos.map((video) => {
-                            return <VideoPreviewCard key={video._id + '-' + Date.now()} {...video} />
+                            return <VideoPreviewCard key={video._id} {...video} />
                         })}
                     </div>
                 )

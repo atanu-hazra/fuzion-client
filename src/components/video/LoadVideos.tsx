@@ -37,7 +37,7 @@ const LoadVideos: React.FC<LoadVideosProps> = ({ query = '' }) => {
         >
             <div className="sm:grid sm:grid-cols-2 sm:gap-4 sm:mx-2">
                 {accessibleVideos.map((video) => {
-                    return <VideoPreviewCard key={video._id+'-'+Date.now()} {...video}   />
+                    return <VideoPreviewCard key={video._id} {...video}   />
                 })}
             </div>
 

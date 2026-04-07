@@ -136,26 +136,35 @@ const UserProfile: React.FC = () => {
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto p-1 border-b border-[#a5bdc5] dark:border-[#485f67]">
-                <div className="flex justify-evenly items-center mx-auto gap-4 mb-2">
-                    <button
-                        className={`py-1 px-6 rounded-full transition-colors duration-200 ${selected === 'videos' ? 'bg-blue-600 dark:bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                        onClick={() => setSelected('videos')}
-                    >
-                        Videos
-                    </button>
-                    <button
-                        className={`py-1 px-6 rounded-full transition-colors duration-200 ${selected === 'tweets' ? 'bg-blue-600 dark:bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                        onClick={() => setSelected('tweets')}
-                    >
-                        Tweets
-                    </button>
-                    <button
-                        className={`py-1 px-6 rounded-full transition-colors duration-200 ${selected === 'playlists' ? 'bg-blue-600 dark:bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                        onClick={() => setSelected('playlists')}
-                    >
-                        Playlists
-                    </button>
+            <div className="mt-1 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center px-1 sm:px-3">
+                    {(
+                        [
+                            { key: 'videos', label: 'Videos' },
+                            { key: 'tweets', label: 'Tweets' },
+                            { key: 'playlists', label: 'Playlists' },
+                        ] as const
+                    ).map((tab) => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setSelected(tab.key)}
+                            className={`relative px-4 sm:px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-200 focus:outline-none
+                                ${selected === tab.key
+                                    ? 'text-slate-900 dark:text-slate-100'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                                }`}
+                        >
+                            {tab.label}
+                            {/* Active underline indicator */}
+                            <span
+                                className={`absolute bottom-0 inset-x-0 h-[2.5px] rounded-full transition-all duration-300
+                                    ${selected === tab.key
+                                        ? 'bg-slate-900 dark:bg-slate-100 opacity-100'
+                                        : 'opacity-0'
+                                    }`}
+                            />
+                        </button>
+                    ))}
                 </div>
             </div>
             <div className="mt-3">

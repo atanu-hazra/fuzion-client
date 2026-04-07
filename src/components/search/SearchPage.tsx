@@ -12,62 +12,100 @@ const SearchPage: React.FC = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value);
-        setQuery(e.target.value); // Sets query as the user types for faster fetching
+        setQuery(e.target.value);
     };
 
     const handleClear = () => {
         setInputValue('');
-        setQuery(''); // Clears the query as well
+        setQuery('');
     };
 
     const handleSubmit = () => {
         setQuery(inputValue);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') handleSubmit();
+    };
+
+    const tabs = [
+        { key: 'videos', label: 'Videos' },
+        { key: 'tweets', label: 'Tweets' },
+        { key: 'users', label: 'Users' },
+    ] as const;
+
     return (
         <>
-            <div className="flex justify-center items-center p-4">
-                <div className="relative w-full md:w-[80%] flex items-center">
-                    <input
-                        type="text"
-                        value={inputValue}
-                        onChange={handleInputChange}
-                        placeholder="Search..."
-                        className="border bg-[#f1f0f0] dark:bg-[#163040] border-gray-300 rounded-full py-2 px-4 pr-8 w-full focus:outline-none"
-                    />
-                    {inputValue && (
-                        <button onClick={handleClear} className="absolute right-14 text-gray-600">
-                            <X className="w-4 h-4" />
-                        </button>
-                    )}
-                    <button onClick={handleSubmit} className="ml-2 bg-blue-600 rounded-full p-2 text-white hover:bg-blue-700 transition">
-                        <Search className="w-5 h-5" />
+            {/* Search bar */}
+            <div className="flex justify-center items-center px-4 pt-5 pb-3">
+                <div className="relative w-full md:w-[70%] flex items-center gap-2">
+                    <div className="relative flex-1">
+                        {/* Search icon inside input */}
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
+
+                        <input
+                            type="text"
+                            value={inputValue}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Search..."
+                            className="w-full pl-10 pr-10 py-2.5 rounded-full text-sm
+                                bg-slate-100 dark:bg-slate-800/60
+                                border border-slate-200 dark:border-slate-700/50
+                                text-slate-900 dark:text-slate-100
+                                placeholder:text-slate-400 dark:placeholder:text-slate-500
+                                focus:outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-slate-600
+                                transition-all duration-200"
+                        />
+
+                        {/* Clear button */}
+                        {inputValue && (
+                            <button
+                                onClick={handleClear}
+                                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Search button */}
+                    <button
+                        onClick={handleSubmit}
+                        className="shrink-0 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full p-2.5 hover:opacity-80 active:scale-95 transition-all duration-150 shadow-sm"
+                    >
+                        <Search className="w-4 h-4" />
                     </button>
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto border-b border-[#a5bdc5] dark:border-[#485f67] p-1">
-                <div className="flex justify-evenly items-center gap-4 mb-2 ">
-                    <button
-                        className={`py-1 px-6 rounded-full transition-colors duration-200 ${selected === 'videos' ? 'bg-blue-600 dark:bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                        onClick={() => setSelected('videos')}
-                    >
-                        Videos
-                    </button>
-                    <button
-                        className={`py-1 px-6 rounded-full transition-colors duration-200 ${selected === 'tweets' ? 'bg-blue-600 dark:bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                        onClick={() => setSelected('tweets')}
-                    >
-                        Tweets
-                    </button>
-                    <button
-                        className={`py-1 px-6 rounded-full transition-colors duration-200 ${selected === 'users' ? 'bg-blue-600 dark:bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                        onClick={() => setSelected('users')}
-                    >
-                        Users
-                    </button>
+            {/* Tab bar — matching UserProfile style */}
+            <div className="border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center px-1 sm:px-3">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setSelected(tab.key)}
+                            className={`relative px-4 sm:px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-200 focus:outline-none
+                                ${selected === tab.key
+                                    ? 'text-slate-900 dark:text-slate-100'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                                }`}
+                        >
+                            {tab.label}
+                            <span
+                                className={`absolute bottom-0 inset-x-0 h-[2.5px] rounded-full transition-all duration-300
+                                    ${selected === tab.key
+                                        ? 'bg-slate-900 dark:bg-slate-100 opacity-100'
+                                        : 'opacity-0'
+                                    }`}
+                            />
+                        </button>
+                    ))}
                 </div>
             </div>
+
+            {/* Content */}
             <div className="mt-2">
                 {selected === 'videos' && <LoadVideos query={query} />}
                 {selected === 'tweets' && <LoadTweets query={query} />}

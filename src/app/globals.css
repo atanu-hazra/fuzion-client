@@ -25,3 +25,111 @@ body {
   font-weight: 700;
 }
 
+/* ── Plyr video player theme overrides ─────────────────────────────── */
+:root {
+  --plyr-color-main: #ffffff;
+  --plyr-control-radius: 4px;
+  --plyr-control-icon-size: 18px;
+  --plyr-font-size-base: 14px;
+  --plyr-font-size-small: 12px;
+  --plyr-font-size-time: 13px;
+
+  /* Control bar colors */
+  --plyr-video-control-color: rgba(255, 255, 255, 0.85);
+  --plyr-video-control-color-hover: #ffffff;
+  --plyr-video-control-background-hover: rgba(255, 255, 255, 0.15);
+
+  /* Range/progress */
+  --plyr-range-fill-background: #ffffff;
+  --plyr-range-thumb-height: 13px;
+  --plyr-range-thumb-background: #ffffff;
+  --plyr-range-thumb-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+
+  /* Volume */
+  --plyr-audio-range-fill-background: #ffffff;
+
+  /* Menus (settings popup) */
+  --plyr-menu-background: rgba(13, 20, 28, 0.96);
+  --plyr-menu-color: #dce8ee;
+  --plyr-menu-border-color: rgba(255, 255, 255, 0.08);
+  --plyr-menu-border-shadow-color: rgba(0, 0, 0, 0.6);
+  --plyr-menu-arrow-color: rgba(255, 255, 255, 0.08);
+  --plyr-menu-item-arrow-color: rgba(255, 255, 255, 0.5);
+  --plyr-menu-back-border-color: rgba(255, 255, 255, 0.08);
+  --plyr-menu-back-border-shadow-color: rgba(0, 0, 0, 0);
+
+  /* Tooltips */
+  --plyr-tooltip-background: rgba(13, 20, 28, 0.92);
+  --plyr-tooltip-color: #dce8ee;
+  --plyr-tooltip-radius: 6px;
+  --plyr-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  /* Badge */
+  --plyr-badge-background: rgba(255, 255, 255, 0.12);
+  --plyr-badge-text-color: #dce8ee;
+  --plyr-badge-border-radius: 4px;
+}
+
+/* ── Center play overlay button ── */
+/* Plyr centers this with translate(-50%,-50%), so we MUST preserve that in transforms */
+.fuzion-plyr .plyr__control--overlaid {
+  background: rgba(255, 255, 255, 0.92) !important;
+  padding: 20px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+.fuzion-plyr .plyr__control--overlaid:hover {
+  background: #ffffff !important;
+  /* translate(-50%,-50%) keeps it centered; scale() does the grow effect */
+  transform: translate(-50%, -50%) scale(1.08) !important;
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+.fuzion-plyr .plyr__control--overlaid svg {
+  color: #0b1921 !important;
+  fill: #0b1921 !important;
+  width: 24px !important;
+  height: 24px !important;
+  margin-left: 3px;
+}
+
+/* ── Bottom control bar ── */
+.fuzion-plyr .plyr--video .plyr__controls {
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)) !important;
+  padding: 24px 12px 10px !important;
+}
+
+/* Individual control buttons hover */
+.fuzion-plyr .plyr--video .plyr__control:hover,
+.fuzion-plyr .plyr--video .plyr__control[aria-expanded=true] {
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+}
+
+/* Settings/captions/fullscreen icon buttons */
+.fuzion-plyr .plyr--video .plyr__control svg {
+  color: rgba(255, 255, 255, 0.85);
+  transition: color 0.15s;
+}
+
+.fuzion-plyr .plyr--video .plyr__control:hover svg {
+  color: #ffffff;
+}
+
+/* Progress bar color */
+.fuzion-plyr .plyr--full-ui input[type=range] {
+  color: #ffffff;
+}
+
+/* Buffered track */
+.fuzion-plyr .plyr__progress__buffer {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Menu items hover */
+.fuzion-plyr .plyr__menu__container .plyr__control--forward:hover,
+.fuzion-plyr .plyr__menu__container .plyr__control:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
