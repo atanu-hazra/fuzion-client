@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`lg:mx-[6%] min-h-screen lg:border-x-2 border-[#4151598e] ${inter.className}`}>
+      <body className={`lg:mx-[6%] min-h-screen lg:border-x-2 border-[#4151598e] antialiased ${inter.className}`}>
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
           <ClientOnlyWrapper>
             <div className="lg:grid lg:grid-cols-12">

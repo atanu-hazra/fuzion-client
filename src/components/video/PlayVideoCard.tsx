@@ -29,8 +29,8 @@ const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
     const [showSaveModal, setShowSaveModal] = useState(false)
     const [shortDescription, setShortDescription] = useState('')
     const [showShortDescription, setShowShortDescription] = useState(false)
-    const ownerVideos = useUserVideos(String(owner._id))
-    const recommendedVideos = shuffleElements(ownerVideos).slice(0, 10)
+    const ownerVideos = useUserVideos(String(owner._id)).filter((v) => v._id !== _id)
+    const recommendedVideos = shuffleElements(ownerVideos).slice(0, 4)
 
     useEffect(() => {
         if (description.length > 100) {
@@ -146,7 +146,7 @@ const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
                 ? (
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4 sm:mx-2">
                         {recommendedVideos.map((video) => {
-                            return <VideoPreviewCard key={video._id + '-' + Date.now()} {...video} />
+                            return <VideoPreviewCard key={video._id} {...video} />
                         })}
                     </div>
                 )
