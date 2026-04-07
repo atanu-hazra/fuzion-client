@@ -19,7 +19,7 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = ({ fetchedUser, enableBio = true }) => {
     const accessToken = useSelector((state: RootState) => state.user.accessToken)
     const currentUserData = useSelector((state: RootState) => state.user.currentUserData)
-    const { avatar, bio, fullName, isSubscribed, username } = fetchedUser
+    const { avatar, bio, fullName, isSubscribed, username, subscribersCount } = fetchedUser
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isFollowing, setIsFollowing] = useState(isSubscribed);
     const [isOwnProfile, setIsOwnProfile] = useState(false)
@@ -49,61 +49,64 @@ const UserCard: React.FC<UserCardProps> = ({ fetchedUser, enableBio = true }) =>
     const avatarUrl = enhanceAvatarResolution(avatar);
 
     return (
-        <div className="flex items-start p-2 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-slate-800 transition cursor-pointer"
-        onClick={() => router.push(`/user/${username}`)}
+        <div
+            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors duration-200 cursor-pointer"
+            onClick={() => router.push(`/user/${username}`)}
         >
-            <div
-                className="cursor-pointer"
-            >
-                <Image
-                    src={String(avatarUrl)}
-                    alt={`${username} avatar`}
-                    className="rounded-full w-12 h-12 object-cover"
-                    width={48}
-                    height={48}
-                />
-            </div>
-            <div className="flex-1 ml-4">
-                <div className="flex items-center justify-between">
-                    <div
-                        onClick={() => router.push(`/user/${username}`)}
-                        className="cursor-pointer"
-                    >
-                        <div className="font-semibold text-gray-900 dark:text-gray-100">
-                            {fullName}
-                        </div>
-                        <div className="text-slate-500 dark:text-slate-400 text-sm">
-                            @{username}
-                        </div>
-                    </div>
-                    {!isOwnProfile && (
-                        <Button
-                            variant="outline"
-                            className={`h-8 px-4 rounded-full text-sm shadow-md ${isLoggedIn && isSubscribed ? 'bg-blue-500 text-white' : 'text-blue-500 border-blue-500 hover:bg-blue-500 hover:text-white'} transition-colors`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (isLoggedIn) {
-                                    toggleSubscription();
-                                } else {
-                                    router.push('/user/auth/login');
-                                }
-                            }}
-                        >
-                            {isLoggedIn && isFollowing ? "Following" : "Follow"}
-                        </Button>
+            {/* Avatar */}
+            <Image
+                src={String(avatarUrl)}
+                alt={`${username} avatar`}
+                className="rounded-full w-10 h-10 object-cover ring-1 ring-slate-200 dark:ring-slate-700 shrink-0"
+                width={40}
+                height={40}
+            />
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+                        {fullName}
+                    </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <span>@{username}</span>
+                    {subscribersCount !== undefined && (
+                        <>
+                            <span>·</span>
+                            <span>{subscribersCount} {subscribersCount === 1 ? 'follower' : 'followers'}</span>
+                        </>
                     )}
                 </div>
                 {enableBio && bio && (
-                    <div
-                        className="mt-1 text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
-                        onClick={() => router.push(`/user/${username}`)}
-                    >
+                    <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 line-clamp-1">
                         {bio}
-                    </div>
+                    </p>
                 )}
             </div>
-        </div>
 
+            {/* Follow button */}
+            {!isOwnProfile && (
+                <Button
+                    variant="ghost"
+                    className={`h-8 px-4 rounded-full text-sm font-medium shrink-0 transition-all duration-200
+                        ${isLoggedIn && isFollowing
+                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                            : 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:opacity-80'
+                        }`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (isLoggedIn) {
+                            toggleSubscription();
+                        } else {
+                            router.push('/user/auth/login');
+                        }
+                    }}
+                >
+                    {isLoggedIn && isFollowing ? "Following" : "Follow"}
+                </Button>
+            )}
+        </div>
     )
 }
 
