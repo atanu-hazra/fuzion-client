@@ -71,7 +71,7 @@ const PlayVideoCard: React.FC<{ video: Video }> = ({ video }) => {
     return (
         <>
             {/* Video Player */}
-            <div className="bg-black rounded-none sm:rounded-xl overflow-hidden shadow-lg">
+            <div className="bg-black rounded-none overflow-hidden shadow-lg">
                 <VideoPlayer src={secureVideoFile} />
             </div>
 
