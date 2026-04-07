@@ -57,19 +57,43 @@ const UserConnectionsPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <div className="flex justify-evenly items-center my-2 mx-10 space-x-4">
-                <button
-                    className={`py-1 px-6 rounded-full transition-colors duration-200 ${serachFor === 'followers' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                    onClick={() => setSerachFor('followers')}
-                >
-                    followers
-                </button>
-                <button
-                    className={`py-1 px-6 rounded-full transition-colors duration-200 ${serachFor === 'followings' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                    onClick={() => setSerachFor('followings')}
-                >
-                    followings
-                </button>
+            <div className="border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center px-1 sm:px-3">
+                    <button
+                        onClick={() => setSerachFor('followers')}
+                        className={`relative px-4 sm:px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-200 focus:outline-none
+                            ${serachFor === 'followers'
+                                ? 'text-slate-900 dark:text-slate-100'
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                            }`}
+                    >
+                        Followers
+                        <span
+                            className={`absolute bottom-0 inset-x-0 h-[2.5px] rounded-full transition-all duration-300
+                                ${serachFor === 'followers'
+                                    ? 'bg-slate-900 dark:bg-slate-100 opacity-100'
+                                    : 'opacity-0'
+                                }`}
+                        />
+                    </button>
+                    <button
+                        onClick={() => setSerachFor('followings')}
+                        className={`relative px-4 sm:px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-200 focus:outline-none
+                            ${serachFor === 'followings'
+                                ? 'text-slate-900 dark:text-slate-100'
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                            }`}
+                    >
+                        Following
+                        <span
+                            className={`absolute bottom-0 inset-x-0 h-[2.5px] rounded-full transition-all duration-300
+                                ${serachFor === 'followings'
+                                    ? 'bg-slate-900 dark:bg-slate-100 opacity-100'
+                                    : 'opacity-0'
+                                }`}
+                        />
+                    </button>
+                </div>
             </div>
 
             {serachFor === "followers" ? <UserFollowers channelId={String(channelId)} /> : <UserFollowings channelId={String(channelId)} />}
