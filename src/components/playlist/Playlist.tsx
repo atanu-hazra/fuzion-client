@@ -54,7 +54,7 @@ const Playlist: React.FC = () => {
         <>
             <div className='mx-2'>
                 <div
-                    className="space-y-1 mb-6 relative p-3 rounded-xl overflow-hidden"
+                    className="space-y-1 mb-6 md:mb-8 relative p-4 md:p-6 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm"
                     style={{
                         backgroundImage: `url(${playlistThumbnail})`,
                         backgroundSize: "cover",
@@ -63,36 +63,36 @@ const Playlist: React.FC = () => {
                 >
                     {/* Background Overlay */}
                     <div
-                        className="absolute inset-0 rounded-xl bg-slate-900 bg-opacity-40 backdrop-blur-lg"
+                        className="absolute inset-0 bg-slate-900/60 dark:bg-slate-900/70 backdrop-blur-xl md:backdrop-blur-2xl"
                     ></div>
 
                     {/* Content */}
-                    <div className="space-y-2 relative z-2 text-white">
-                        <div className='flex gap-3 items-center'>
-                            <div className="text-2xl font-medium">{name}</div>
-                            {!playlist.isPublic && (
-                                <LockKeyhole
-                                    className="opacity-60"
-                                    style={{ height: '20px', width: '20px' }}
-                                />
-                            )}
-                        </div>
-                        <div className="text-xs font-light text-slate-200 dark:text-slate-300">
-                            {description}
-                        </div>
-                        <div className='flex justify-between'>
-                            <div className='flex items-center gap-2'>
-                                <Image
-                                    src={String(ownerAvatar)}
-                                    alt={`${username}'s avatar`}
-                                    width={36}
-                                    height={36}
-                                    className="aspect-[1/1] rounded-full border-2 object-cover shadow-2xl"
-                                />
-                                <span className="text-sm text-white">
-                                    by {fullName}
-                                </span>
+                        <div className="space-y-2 relative z-10 text-white flex flex-col h-full justify-end">
+                            <div className='flex gap-3 items-center'>
+                                <div className="text-2xl md:text-3xl font-semibold tracking-tight">{name}</div>
+                                {!playlist.isPublic && (
+                                    <LockKeyhole
+                                        className="opacity-70 mt-1"
+                                        style={{ height: '22px', width: '22px' }}
+                                    />
+                                )}
                             </div>
+                            <div className="text-sm md:text-base font-light text-slate-200 dark:text-slate-300 max-w-2xl">
+                                {description}
+                            </div>
+                            <div className='flex justify-between items-end mt-4'>
+                                <div className='flex items-center gap-3 bg-white/10 dark:bg-black/20 w-fit px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10'>
+                                    <Image
+                                        src={String(ownerAvatar)}
+                                        alt={`${username}'s avatar`}
+                                        width={32}
+                                        height={32}
+                                        className="aspect-square rounded-full object-cover shadow-sm"
+                                    />
+                                    <span className="text-sm font-medium text-white/90">
+                                        {fullName}
+                                    </span>
+                                </div>
 
                             {isOwner && (
                                 <div className='flex items-center gap-1'>
@@ -130,7 +130,7 @@ const Playlist: React.FC = () => {
                 <div>
                     {accessibleVideos.length > 0
                         ? (
-                            <div className="pb-[30%] md:pb-[10%] space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:mx-1">
+                            <div className="pb-[30%] md:pb-[10%] grid grid-cols-1 xl:grid-cols-2 gap-3 lg:gap-5 w-full mx-auto px-1 sm:px-2">
                                 {accessibleVideos.map((video) => {
                                     return <PlaylistVideoCard key={video._id} video={video} isPlaylistOwner={isOwner} />
                                 })}
@@ -142,28 +142,18 @@ const Playlist: React.FC = () => {
                             </div>
                         )}
                 </div>
-                {showRemoveModal && (
-                    <div className="fixed z-10 inset-0 flex items-center justify-center backdrop-blur-sm bg-[#0b3644] bg-opacity-30">
-                        <div className="bg-white flex flex-col justify-center gap-1 m-7 p-5 rounded-xl shadow-md text-[#0b3644]">
-                            <div className="font-bold text-xl" >
+                {showRemoveModal ? (
+                    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-md bg-black/40 z-50">
+                        <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl flex flex-col justify-center gap-2 mx-4 p-6 rounded-3xl shadow-2xl border border-slate-200/50 dark:border-slate-800/50 max-w-sm w-full">
+                            <div className="font-semibold text-lg text-slate-900 dark:text-slate-100 text-center">
                                 Delete playlist?
                             </div>
-                            <div className="text-slate-700 text-sm">
+                            <div className="text-slate-600 dark:text-slate-400 text-sm text-center mb-4">
                                 Once you delete the playlist, it will no longer be available to you and other users.
                             </div>
-                            <div className="flex mt-3 flex-col gap-2 justify-center items-center">
+                            <div className="flex flex-col gap-3">
                                 <Button
-                                    variant="outline"
-                                    className="w-52 rounded-full text-base font-semibold border-[#0b3644] text-[#0b3644]"
-                                    onClick={() => {
-                                        setShowRemoveModal(false)
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    className="w-52 bg-[#104b5f] text-base text-white hover:text-white hover:bg-[#0b3644]
-                rounded-full "
+                                    className="w-full bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-500/20 rounded-full transition-colors"
                                     onClick={async () => {
                                         try {
                                             await api.delete(`/api/v1/playlists/${_id}`, {
@@ -171,19 +161,25 @@ const Playlist: React.FC = () => {
                                                     Authorization: `Bearer ${accessToken}`,
                                                 },
                                             });
-
-                                            router.push('/playlists')
+                                            router.push('/playlists');
                                         } catch (error) {
-                                            console.error(error)
+                                            console.error(error);
                                         }
                                     }}
                                 >
                                     Delete
                                 </Button>
+                                <Button
+                                    variant="ghost"
+                                    className="w-full rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                    onClick={() => setShowRemoveModal(false)}
+                                >
+                                    Cancel
+                                </Button>
                             </div>
                         </div>
                     </div>
-                )}
+                ) : null}
             </div>
         </>
     )

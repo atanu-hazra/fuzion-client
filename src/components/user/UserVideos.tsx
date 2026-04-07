@@ -17,7 +17,7 @@ const UserVideos: React.FC = () => {
     }
 
     return (
-        <div className="pb-[30%] md:pb-[10%] space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:mx-1">
+        <div className="pb-[30%] md:pb-[10%] grid grid-cols-1 xl:grid-cols-2 gap-3 lg:gap-5 w-full mx-auto px-1 sm:px-2">
             {userVideos.map((video) => {
                 return <UserVidPreviewCard key={video._id} video={video}/>
             })}
