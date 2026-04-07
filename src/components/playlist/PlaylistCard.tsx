@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '../ui/button';
 import { RootState } from '@/store/store';
-import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical, ListVideo, LockKeyhole } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { Playlist } from '@/types';
@@ -63,117 +63,140 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist }) => {
     return (
         <>
             {!(isDeleted || !showPlaylist) && (
-                <div className="my-2 mx-2"
+                <div
+                    className="group relative flex flex-row gap-4 p-2.5 md:p-3 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors duration-300 rounded-2xl cursor-pointer"
                 >
+                    {/* Thumbnail with stacked card effect */}
                     <div
-                        key={_id}
-                        className="flex items-start space-x-3 cursor-pointer"
+                        className="relative flex-none w-[160px] sm:w-[200px] md:w-[220px] shrink-0"
+                        onClick={() => router.push(`/playlists/${_id}`)}
                     >
-                        <div
-                            className="relative w-40 h-24 flex-shrink-0 rounded-xl overflow-hidden"
-                            onClick={() => router.push(`/playlists/${_id}`)}
-                        >
-                            <div className="absolute w-[85%] h-full bg-cover rounded-xl bg-center blur-xl scale-110 z-0"
-                                style={{
-                                    backgroundImage: `url(${playlistThumbnail})`
-                                }}
-                            />
+                        {/* Stacked look behind */}
+                        <div className="absolute -top-1 left-1 right-1 h-full rounded-xl bg-slate-300/40 dark:bg-slate-700/30 scale-[0.96] -z-10" />
+                        <div className="absolute -top-2 left-2 right-2 h-full rounded-xl bg-slate-300/25 dark:bg-slate-700/20 scale-[0.92] -z-20" />
 
+                        {/* Image */}
+                        <div className="rounded-xl overflow-hidden shadow-md relative">
                             <Image
                                 src={String(playlistThumbnail)}
                                 alt={name}
                                 width={640}
                                 height={360}
-                                className="relative z-10 aspect-[16/9] object-cover rounded-xl shadow-2xl"
+                                className="aspect-[16/9] object-cover w-full transition-transform duration-300 group-hover:scale-105"
                                 priority
                             />
 
-                            <div className="absolute bottom-2 right-1 bg-black bg-opacity-75 text-white text-xs font-normal px-2 py-0.5 rounded z-10">
-                                {publicVideos.length === 0
-                                    ? "0 videos"
-                                    : publicVideos.length === 1
-                                        ? "1 video"
-                                        : `${publicVideos.length} videos`}
+                            {/* Bottom gradient overlay for video count */}
+                            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/70 to-transparent" />
+
+                            {/* Video count badge */}
+                            <div className="absolute bottom-1.5 right-2 flex items-center gap-1 text-white text-[11px] sm:text-xs font-medium z-10">
+                                <ListVideo className="w-3.5 h-3.5" />
+                                <span>
+                                    {publicVideos.length} {publicVideos.length === 1 ? 'video' : 'videos'}
+                                </span>
                             </div>
+
+                            {/* Private badge */}
+                            {!isPublic && (
+                                <div className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium px-1.5 py-0.5 rounded-md z-10">
+                                    <LockKeyhole className="w-3 h-3" />
+                                    <span>Private</span>
+                                </div>
+                            )}
                         </div>
-
-
-                        <div
-                            className="flex flex-col flex-grow"
-                            onClick={() => router.push(`/playlists/${_id}`)}
-                        >
-                            <div className="text-sm font-semibold line-clamp-2">{name}</div>
-                            <div className="text-xs text-gray-400">{shortDescription}</div>
-                            <div className="text-xs text-gray-500 mt-1">@{owner.username}</div>
-                        </div>
-
-                        {isOwner && (
-                            <div className="relative">
-                                <Button
-                                    size="icon"
-                                    className="self-start"
-                                    onClick={() => handleMenuToggle()}
-                                >
-                                    <EllipsisVertical className="h-5 w-5 text-gray-400" />
-                                </Button>
-                                {menuOpen && (
-                                    <div className="absolute right-0 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg z-10 transition-transform transform translate-y-2">
-                                        <button
-                                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-                                            onClick={() => {
-                                                setMenuOpen(false)
-                                                router.push(`/playlists/update/${_id}`)
-                                            }}
-                                        >
-                                            Edit Playlist
-                                        </button>
-
-                                        <button
-                                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-                                            onClick={() => {
-                                                setMenuOpen(false)
-                                                setShowRemoveModal(true)
-                                            }}
-                                        >
-                                            Delete Playlist
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
-                    {showRemoveModal && (
-                        <div className="fixed z-20 inset-0 flex items-center justify-center backdrop-blur-sm bg-[#0b3644] bg-opacity-30">
-                            <div className="bg-white flex flex-col justify-center gap-1 m-7 p-5 rounded-xl shadow-md text-[#0b3644]">
-                                <div className="font-bold text-xl" >
-                                    Delete playlist?
-                                </div>
-                                <div className="text-slate-700 text-sm">
-                                    Once you delete the playlist, it will no longer be available to you and other users.
-                                </div>
-                                <div className="flex mt-3 flex-col gap-2 justify-center items-center">
-                                    <Button
-                                        variant="outline"
-                                        className="w-52 rounded-full text-base font-semibold border-[#0b3644] text-[#0b3644]"
-                                        onClick={() => {
-                                            setShowRemoveModal(false)
+
+                    {/* Details section */}
+                    <div
+                        className="flex-1 flex flex-col min-w-0 py-1"
+                        onClick={() => router.push(`/playlists/${_id}`)}
+                    >
+                        <div className="text-sm sm:text-base font-medium text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug mb-1">
+                            {name}
+                        </div>
+                        <div className="text-[12px] sm:text-[13px] text-slate-500 dark:text-slate-400 line-clamp-1 mb-1.5">
+                            {shortDescription}
+                        </div>
+                        <div className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-500">
+                            @{owner.username}
+                        </div>
+                    </div>
+
+                    {/* Menu button */}
+                    {isOwner && (
+                        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 m-0 p-0"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMenuToggle();
+                                }}
+                            >
+                                <EllipsisVertical className="h-4 w-4 sm:h-5 sm:w-5" />
+                            </Button>
+                            {menuOpen && (
+                                <div className="absolute right-0 top-full mt-1 w-48 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-xl overflow-hidden py-1 z-20">
+                                    <button
+                                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/50 transition-colors"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setMenuOpen(false);
+                                            router.push(`/playlists/update/${_id}`);
                                         }}
                                     >
-                                        Cancel
-                                    </Button>
+                                        Edit Playlist
+                                    </button>
+
+                                    <button
+                                        className="block w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setMenuOpen(false);
+                                            setShowRemoveModal(true);
+                                        }}
+                                    >
+                                        Delete Playlist
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Delete modal */}
+                    {showRemoveModal ? (
+                        <div
+                            className="fixed inset-0 flex items-center justify-center backdrop-blur-md bg-black/40 z-50"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl flex flex-col justify-center gap-2 mx-4 p-6 rounded-3xl shadow-2xl border border-slate-200/50 dark:border-slate-800/50 max-w-sm w-full">
+                                <div className="font-semibold text-lg text-slate-900 dark:text-slate-100 text-center">
+                                    Delete playlist?
+                                </div>
+                                <div className="text-slate-600 dark:text-slate-400 text-sm text-center mb-4">
+                                    Once you delete the playlist, it will no longer be available to you and other users.
+                                </div>
+                                <div className="flex flex-col gap-3">
                                     <Button
-                                        className="w-52 bg-[#104b5f] text-base text-white hover:text-white hover:bg-[#0b3644]
-                rounded-full "
+                                        className="w-full bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-500/20 rounded-full transition-colors"
                                         onClick={() => handleDelete()}
                                     >
                                         Delete
                                     </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                        onClick={() => setShowRemoveModal(false)}
+                                    >
+                                        Cancel
+                                    </Button>
                                 </div>
                             </div>
                         </div>
-                    )}
+                    ) : null}
                 </div>
-
             )}
         </>
     )
