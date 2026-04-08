@@ -21,15 +21,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
                 controls: [
                     'play-large',
                     'play',
-                    'rewind',
-                    'fast-forward',
-                    'progress',
                     'current-time',
+                    'progress',
                     'duration',
-                    'mute',
-                    'volume',
                     'settings',
-                    'pip',
                     'fullscreen',
                 ],
                 settings: ['speed', 'loop'],
@@ -41,21 +36,36 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
                 tooltips: { controls: true, seek: true },
                 autoplay: true,
                 muted: false,
+                volume: 1,
                 resetOnEnd: false,
                 ratio: '16:9',
             });
 
-            // Autoplay: try unmuted first, fall back to muted if browser blocks it
             playerRef.current.once('ready', () => {
+                if (playerRef.current) {
+                    playerRef.current.volume = 1;
+                    playerRef.current.muted = false;
+                }
+
                 const playPromise = playerRef.current?.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(() => {
-                        // Browser blocked autoplay — try muted
                         if (playerRef.current) {
                             playerRef.current.muted = true;
                             playerRef.current.play().catch(() => { });
                         }
                     });
+                }
+            });
+
+            // Prevent any external or programmatic volume/mute changes
+            playerRef.current.on('volumechange', () => {
+                if (!playerRef.current) return;
+                if (playerRef.current.muted) {
+                    playerRef.current.muted = false;
+                }
+                if (playerRef.current.volume !== 1) {
+                    playerRef.current.volume = 1;
                 }
             });
         });
